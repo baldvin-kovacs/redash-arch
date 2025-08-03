@@ -7,8 +7,11 @@ I forked it from the [reference setup](https://github.com/getredash/setup), that
 As opposed to the original, it is not necessary to run it as root.
 
 ```
-# ./setup.sh
+# ./setup.sh --base <dir>
 ```
+
+Make sure `<dir>` is a directory where you can write to. It will be created if doesn't exist. The default is
+`/opt/redash`, to which you likely cannot write to as a normal user.
 
 Also as opposed to the original, the script does not install anything, but expects `podman` and
 `podman-compose` to be installed.
@@ -23,11 +26,11 @@ The setup script has the following optional parameters: `--dont-start`, `--previ
 
 These can be used independently of each other, or in combinations (with the exception that `--preview` and `--version` cannot be used together).
 
-### --base <dir>
+### --base `<dir>`
 
 Use this directory as a base directory for the setup. It will be created if does not exist.
 
-### --port <port>
+### --port `<port>`
 
 Serve Redash on this port. It is directly served, no nginx. Default: 5000.
 
