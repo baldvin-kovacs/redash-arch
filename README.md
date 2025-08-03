@@ -1,41 +1,17 @@
-# Setup script for Redash with Docker on Linux
+# Setup script for Redash with Podman on Arch Linux
 
-This is a reference setup for Redash on a single Linux server.
-
-It uses Docker and Docker Compose for deployment and management.
-
-This is the same setup we use for our official images (for AWS & Google Cloud) and can be used as reference if you want
-to manually setup Redash in a different environment (different OS or different deployment location).
-
-- `setup.sh` is the script that installs everything and creates the directories.
-- `compose.yaml` is the Docker Compose setup we use.
-- `packer.json` is Packer configuration we use to create the Cloud images.
-
-## Tested
-
-- Alma Linux 8.x & 9.x
-- CentOS Stream 9.x
-- Debian 12.x
-- Fedora 38, 39 & 40
-- Oracle Linux 9.x
-- Red Hat Enterprise Linux 8.x & 9.x
-- Rocky Linux 8.x & 9.x
-- Ubuntu LTS 20.04 & 22.04
+I forked it from the [reference setup](https://github.com/getredash/setup), that uses Docker and a bunch of other Linux distros.
 
 ## How to use this
 
-This script should be run as the `root` user on a supported Linux system (as per above list):
+As opposed to the original, it is not necessary to run it as root.
 
 ```
 # ./setup.sh
 ```
 
-When run, the script will install the needed packages (mostly Docker) then install Redash, ready for you to configure
-and begin using.
-
-> [!TIP]
-> If you are not on a supported Linux system, you can manually install 'docker' and 'docker compose',  
-> then run the script to start the Redash installation process.
+Also as opposed to the original, the script does not install anything, but expects `podman` and
+`podman-compose` to be installed.
 
 > [!IMPORTANT]
 > The very first time you load your Redash web interface it can take a while to appear, as the background Python code
@@ -43,13 +19,21 @@ and begin using.
 
 ## Optional parameters
 
-The setup script has the following optional parameters: `--dont-start`, `--preview`, `--version`, and `--overwrite`.
+The setup script has the following optional parameters: `--dont-start`, `--preview`, `--version`, `--base <dir>`, `--port <port>`.
 
 These can be used independently of each other, or in combinations (with the exception that `--preview` and `--version` cannot be used together).
 
+### --base <dir>
+
+Use this directory as a base directory for the setup. It will be created if does not exist.
+
+### --port <port>
+
+Serve Redash on this port. It is directly served, no nginx. Default: 5000.
+
 ### --preview
 
-When the `--preview` parameter is given, the setup script will install the latest `preview` 
+When the `--preview` parameter is given, the setup script will install the latest `preview`
 [image from Docker Hub](https://hub.docker.com/r/redash/redash/tags) instead of using the latest preview release.
 
 ```
@@ -73,18 +57,6 @@ This option allows you to install a specific version of Redash, which can be use
 
 When neither `--preview` nor `--version` is specified, the script will automatically detect and install the latest stable release of Redash using the GitHub API.
 
-### --overwrite
-
-> [!CAUTION]
-> ***DO NOT*** use this parameter if you want to keep your existing Redash installation!  It ***WILL*** be overwritten.
-
-When the `--overwrite` option is given, the setup script will delete the existing Redash environment file
-(`/opt/redash/env`) and Redash database, then set up a brand new (empty) Redash installation.
-
-```
-# ./setup.sh --overwrite
-```
-
 ### --dont-start
 
 When this option is given, the setup script will install Redash without starting it afterwards.
@@ -97,31 +69,4 @@ This is useful for people wanting to customise or modify their Redash installati
 
 ## FAQ
 
-### Can I use this in production?
-
-For small scale deployments -- yes. But for larger deployments we recommend at least splitting the database (and
-probably Redis) into its own server (preferably a managed service like RDS) and setting up at least 2 servers for
-Redash for redundancy. You will also need to tweak the number of workers based on your usage patterns.
-
-### How do I upgrade to newer versions of Redash?
-
-See [Upgrade Guide](https://redash.io/help/open-source/admin-guide/how-to-upgrade).
-
-### How do I use `setup.sh` on a different operating system?
-
-You will need to create a docker installation function that suits your operating system, and maybe other functions as
-well.
-
-The `install_docker_*()` functions in setup.sh shouldn't be too hard to adapt to other Linux distributions.
-
-### How do I remove Redash if I no longer need it?
-
-1. Stop the Redash containers and remove the images using `docker compose -f /opt/redash/compose.yaml down --volumes --rmi all`.
-2. Remove the following lines from `~/.profile` and `~/.bashrc` if they're present.
-
-   ```
-   export COMPOSE_PROJECT_NAME=redash
-   export COMPOSE_FILE=/opt/redash/compose.yaml
-   ```
-
-3. Delete the Redash folder using `sudo rm -fr /opt/redash`
+Please refer to the [original](https://github.com/getredash/setup?tab=readme-ov-file#faq).
